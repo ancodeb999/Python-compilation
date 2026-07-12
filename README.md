@@ -18,7 +18,7 @@ Each language should live in `packages/<language>/` and have its own workflow jo
 
 ## Python CI
 
-The Python workflow runs on every push and pull request. It checks Python `3.10`, `3.11`, `3.12`, and `3.13`.
+The Python workflow runs on every push, pull request, and manual run from the GitHub Actions page. It uses the latest available Python 3 version as the example build version.
 
 The workflow validates:
 
@@ -26,7 +26,7 @@ The workflow validates:
 - linting with `ruff`
 - tests with `pytest`
 - source and wheel builds with `uv build`
-- PyInstaller executable builds for Windows, macOS, Linux, and Arch Linux
+- PyInstaller executable builds of the main Python program, `src/python_compilation/cli.py`, for Windows, macOS, Linux, and Arch Linux
 
 Successful workflow runs upload these executable artifacts:
 
