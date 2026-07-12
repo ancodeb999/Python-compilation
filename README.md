@@ -6,12 +6,12 @@ Open source GitHub Actions template for compiling, testing, and validating a Pyt
 
 ```text
 .
-├── .github/workflows/python.yml
-└── packages/
-    └── python/
-        ├── pyproject.toml
-        ├── src/python_compilation/
-        └── tests/
+|-- .github/workflows/python.yml
+`-- packages/
+    `-- python/
+        |-- pyproject.toml
+        |-- src/python_compilation/
+        `-- tests/
 ```
 
 Each language should live in `packages/<language>/` and have its own workflow job or workflow file. For example, a future Rust project can be added under `packages/rust/` while keeping the Python workflow unchanged.
@@ -26,6 +26,14 @@ The workflow validates:
 - linting with `ruff`
 - tests with `pytest`
 - source and wheel builds with `uv build`
+- PyInstaller executable builds for Windows, macOS, Linux, and Arch Linux
+
+Successful workflow runs upload these executable artifacts:
+
+- `python-compilation-windows`
+- `python-compilation-macos`
+- `python-compilation-linux`
+- `python-compilation-archlinux`
 
 ## Local Development
 
@@ -37,6 +45,7 @@ uv sync --all-extras --dev
 uv run ruff check .
 uv run pytest
 uv build
+uv run pyinstaller --clean --onefile --name python-compilation src/python_compilation/cli.py
 ```
 
 The package exposes a small example function and CLI so the template has real code to lint, test, and build.
@@ -47,4 +56,3 @@ The package exposes a small example function and CLI so the template has real co
 2. Add that language's build and test files inside the new directory.
 3. Add a dedicated GitHub Actions job or workflow that sets its working directory to the new package.
 4. Keep shared repository policy in the root README and language-specific commands inside each package.
-

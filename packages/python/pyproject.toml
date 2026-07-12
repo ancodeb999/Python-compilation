@@ -19,6 +19,7 @@ python-compilation = "python_compilation.cli:main"
 [dependency-groups]
 dev = [
   "build>=1.2.2",
+  "pyinstaller>=6.11.0",
   "pytest>=8.3.0",
   "ruff>=0.8.0"
 ]
@@ -32,4 +33,3 @@ testpaths = ["tests"]
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-

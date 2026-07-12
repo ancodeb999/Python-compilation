@@ -8,8 +8,8 @@ permissions:
   contents: read
 
 jobs:
-  python:
-    name: Python ${{ matrix.python-version }}
+  quality:
+    name: Quality Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
 
     strategy:
@@ -47,3 +47,88 @@ jobs:
       - name: Build
         run: uv build
 
+  pyinstaller:
+    name: PyInstaller ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    needs: quality
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: windows
+            os: windows-latest
+            artifact-name: python-compilation-windows
+            executable-path: packages/python/dist/python-compilation.exe
+          - target: macos
+            os: macos-13
+            artifact-name: python-compilation-macos
+            executable-path: packages/python/dist/python-compilation
+          - target: linux
+            os: ubuntu-latest
+            artifact-name: python-compilation-linux
+            executable-path: packages/python/dist/python-compilation
+
+    defaults:
+      run:
+        working-directory: packages/python
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: uv sync --all-extras --dev
+
+      - name: Build executable
+        run: uv run pyinstaller --clean --onefile --name python-compilation src/python_compilation/cli.py
+
+      - name: Upload executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: ${{ matrix.executable-path }}
+          if-no-files-found: error
+
+  pyinstaller-arch:
+    name: PyInstaller archlinux
+    runs-on: ubuntu-latest
+    needs: quality
+    container:
+      image: archlinux:latest
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/python
+
+    steps:
+      - name: Install system dependencies
+        working-directory: .
+        run: pacman -Syu --noconfirm git nodejs python uv binutils patchelf
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: uv sync --all-extras --dev
+
+      - name: Build executable
+        run: uv run pyinstaller --clean --onefile --name python-compilation src/python_compilation/cli.py
+
+      - name: Upload executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-compilation-archlinux
+          path: packages/python/dist/python-compilation
+          if-no-files-found: error
