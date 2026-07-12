@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "python-compilation"
+version = "0.1.0"
+description = "A minimal Python package used to demonstrate GitHub Actions compilation checks."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+  { name = "ancodeb999" }
+]
+dependencies = []
+
+[project.scripts]
+python-compilation = "python_compilation.cli:main"
+
+[dependency-groups]
+dev = [
+  "build>=1.2.2",
+  "pytest>=8.3.0",
+  "ruff>=0.8.0"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/python_compilation"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
